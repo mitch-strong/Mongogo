@@ -1,8 +1,10 @@
 package database
 
 import (
+	"fmt"
 	"log"
 
+	"github.com/ljdursi/candig_mds/models"
 	"gopkg.in/mgo.v2"
 )
 
@@ -39,13 +41,40 @@ func Insert(collection string, object interface{}) bool {
 	return true
 }
 
-//GetAll returns an array of all objects in a collection
-func GetAll(collection string) []interface{} {
+// //GetAll returns an array of all objects in a collection
+// func GetAll(collection string) []interface{} {
+// 	c := setCollection(collection)
+// 	var list []interface{}
+// 	err := c.Find(nil).All(&list)
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+// 	return list
+// }
+
+func GetAllBiosamples(collection string) []*models.Biosample {
 	c := setCollection(collection)
-	var list []interface{}
+	var list []*models.Biosample
 	err := c.Find(nil).All(&list)
 	if err != nil {
 		log.Fatal(err)
+	}
+	return list
+}
+
+func GetAll(collection string) []interface{} {
+	var result interface{}
+	c := setCollection(collection)
+	iter := c.Find(nil).Iter()
+	count, _ := c.Find(nil).Count()
+	list := make([]interface{}, count)
+	counter := 0
+	for iter.Next(&result) {
+		list[counter] = result
+		counter++
+	}
+	if err := iter.Close(); err != nil {
+		fmt.Printf("%v", err)
 	}
 	return list
 }
