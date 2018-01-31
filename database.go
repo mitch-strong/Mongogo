@@ -24,13 +24,14 @@ func DatabaseInit(dbName, connectionstring string) {
 	//defer session.Close()
 }
 
-func setCollection(collection string) *mgo.Collection {
+//SetCollection changes the collection of the datbase context
+func SetCollection(collection string) *mgo.Collection {
 	return session.DB(databaseName).C(collection)
 }
 
 //Insert allows users to add generic objects to a collection in the database
 func Insert(collection string, object interface{}) bool {
-	c := setCollection(collection)
+	c := SetCollection(collection)
 	err := c.Insert(object)
 	if err != nil {
 		log.Fatal(err)
@@ -39,20 +40,26 @@ func Insert(collection string, object interface{}) bool {
 	return true
 }
 
-//GetAll returns an array of all objects in a collection
-func GetAll(collection string) []interface{} {
-	c := setCollection(collection)
-	var list []interface{}
-	err := c.Find(nil).All(&list)
-	if err != nil {
-		log.Fatal(err)
-	}
-	return list
-}
+// func GetAll(collection string) []interface{} {
+// 	var result interface{}
+// 	c := SetCollection(collection)
+// 	iter := c.Find(nil).Iter()
+// 	count, _ := c.Find(nil).Count()
+// 	list := make([]interface{}, count)
+// 	counter := 0
+// 	for iter.Next(&result) {
+// 		list[counter] = result
+// 		counter++
+// 	}
+// 	if err := iter.Close(); err != nil {
+// 		fmt.Printf("%v", err)
+// 	}
+// 	return list
+// }
 
 //RemoveAll will empty a collection
 func RemoveAll(collection string) bool {
-	c := setCollection(collection)
+	c := SetCollection(collection)
 	_, err := c.RemoveAll(nil)
 	if err != nil {
 		log.Fatal(err)
